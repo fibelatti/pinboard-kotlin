@@ -32,6 +32,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.ui.components.AutoSizeText
 import com.fibelatti.ui.components.ListItem
+import com.fibelatti.ui.components.SegmentedColumn
 import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -76,18 +77,17 @@ fun NavigationMenuContent(
                 Spacer(modifier = Modifier.height(30.dp))
             }
 
-            group.forEachIndexed { index: Int, item: NavigationMenuItem ->
-                MenuItem(
-                    textRes = item.textRes,
-                    onClick = { onActionClick(item.action) },
-                    icon = item.icon,
-                    shape = when {
-                        group.size == 1 -> Shapes.StandaloneShape
-                        index == 0 -> Shapes.TopShape
-                        index == group.lastIndex -> Shapes.BottomShape
-                        else -> Shapes.MiddleShape
-                    },
-                )
+            SegmentedColumn {
+                group.forEach { menuItem: NavigationMenuItem ->
+                    item { shape: Shape ->
+                        MenuItem(
+                            textRes = menuItem.textRes,
+                            onClick = { onActionClick(menuItem.action) },
+                            icon = menuItem.icon,
+                            shape = shape,
+                        )
+                    }
+                }
             }
         }
 

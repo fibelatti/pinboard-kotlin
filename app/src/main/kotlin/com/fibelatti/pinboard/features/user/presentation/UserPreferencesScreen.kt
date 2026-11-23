@@ -10,12 +10,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -102,6 +97,7 @@ import com.fibelatti.pinboard.features.tags.presentation.displayTitle
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.ListItem
+import com.fibelatti.ui.components.SegmentedColumn
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.components.defaultListItemColors
 import com.fibelatti.ui.components.rememberAppSheetState
@@ -264,113 +260,129 @@ private fun AppPreferencesContent(
 
         val isDynamicColorSupported: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
-        SettingItem(
-            title = stringResource(id = R.string.user_preferences_appearance),
-            shape = if (isDynamicColorSupported) Shapes.TopShape else Shapes.StandaloneShape,
-        ) {
-            PreferenceSelectionButton(
-                currentSelection = userPreferences.appearance,
-                buttonText = { option: Appearance ->
-                    when (option) {
-                        Appearance.DarkTheme -> R.string.user_preferences_appearance_dark
-                        Appearance.LightTheme -> R.string.user_preferences_appearance_light
-                        Appearance.SystemDefault -> R.string.user_preferences_appearance_system_default
-                    }
-                },
-                title = R.string.user_preferences_appearance,
-                options = {
-                    listOf(
-                        Appearance.DarkTheme,
-                        Appearance.LightTheme,
-                        Appearance.SystemDefault,
+        SegmentedColumn {
+            item { shape: Shape ->
+                SettingItem(
+                    title = stringResource(id = R.string.user_preferences_appearance),
+                    shape = shape,
+                ) {
+                    PreferenceSelectionButton(
+                        currentSelection = userPreferences.appearance,
+                        buttonText = { option: Appearance ->
+                            when (option) {
+                                Appearance.DarkTheme -> R.string.user_preferences_appearance_dark
+                                Appearance.LightTheme -> R.string.user_preferences_appearance_light
+                                Appearance.SystemDefault -> R.string.user_preferences_appearance_system_default
+                            }
+                        },
+                        title = R.string.user_preferences_appearance,
+                        options = {
+                            listOf(
+                                Appearance.DarkTheme,
+                                Appearance.LightTheme,
+                                Appearance.SystemDefault,
+                            )
+                        },
+                        onOptionSelect = onAppearanceChange,
                     )
-                },
-                onOptionSelect = onAppearanceChange,
-            )
-        }
+                }
+            }
 
-        if (isDynamicColorSupported) {
-            SettingToggle(
-                title = stringResource(id = R.string.user_preferences_dynamic_colors),
-                description = stringResource(id = R.string.user_preferences_dynamic_colors_caveat),
-                checked = userPreferences.applyDynamicColors,
-                onCheckedChange = onDynamicColorChange,
-                shape = Shapes.BottomShape,
-            )
+            if (isDynamicColorSupported) {
+                item { shape: Shape ->
+                    SettingToggle(
+                        title = stringResource(id = R.string.user_preferences_dynamic_colors),
+                        description = stringResource(id = R.string.user_preferences_dynamic_colors_caveat),
+                        checked = userPreferences.applyDynamicColors,
+                        onCheckedChange = onDynamicColorChange,
+                        shape = shape,
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        SettingItem(
-            title = stringResource(id = R.string.user_preferences_date_format),
-            shape = Shapes.TopShape,
-        ) {
-            PreferenceSelectionButton(
-                currentSelection = userPreferences.preferredDateFormat,
-                buttonText = { option: PreferredDateFormat ->
-                    when (option) {
-                        is PreferredDateFormat.DayMonthYearWithTime -> {
-                            R.string.user_preferences_date_format_day_first
-                        }
+        SegmentedColumn {
+            item { shape: Shape ->
+                SettingItem(
+                    title = stringResource(id = R.string.user_preferences_date_format),
+                    shape = shape,
+                ) {
+                    PreferenceSelectionButton(
+                        currentSelection = userPreferences.preferredDateFormat,
+                        buttonText = { option: PreferredDateFormat ->
+                            when (option) {
+                                is PreferredDateFormat.DayMonthYearWithTime -> {
+                                    R.string.user_preferences_date_format_day_first
+                                }
 
-                        is PreferredDateFormat.MonthDayYearWithTime -> {
-                            R.string.user_preferences_date_format_month_first
-                        }
+                                is PreferredDateFormat.MonthDayYearWithTime -> {
+                                    R.string.user_preferences_date_format_month_first
+                                }
 
-                        is PreferredDateFormat.ShortYearMonthDayWithTime -> {
-                            R.string.user_preferences_date_format_short_year_first
-                        }
+                                is PreferredDateFormat.ShortYearMonthDayWithTime -> {
+                                    R.string.user_preferences_date_format_short_year_first
+                                }
 
-                        is PreferredDateFormat.YearMonthDayWithTime -> {
-                            R.string.user_preferences_date_format_year_first
-                        }
+                                is PreferredDateFormat.YearMonthDayWithTime -> {
+                                    R.string.user_preferences_date_format_year_first
+                                }
 
-                        is PreferredDateFormat.NoDate -> {
-                            R.string.user_preferences_date_format_no_date
-                        }
-                    }
-                },
-                title = R.string.user_preferences_date_format,
-                options = {
-                    listOf(
-                        PreferredDateFormat.DayMonthYearWithTime(),
-                        PreferredDateFormat.MonthDayYearWithTime(),
-                        PreferredDateFormat.ShortYearMonthDayWithTime(),
-                        PreferredDateFormat.YearMonthDayWithTime(),
-                        PreferredDateFormat.NoDate,
-                    )
-                },
-                onOptionSelect = { newSelection ->
-                    onDateFormatChange(newSelection, userPreferences.preferredDateFormat.includeTime)
-                },
-                footer = {
-                    SettingToggle(
-                        title = stringResource(R.string.user_preferences_date_format_include_time),
-                        checked = userPreferences.preferredDateFormat.includeTime,
-                        onCheckedChange = { newValue ->
-                            onDateFormatChange(userPreferences.preferredDateFormat, newValue)
+                                is PreferredDateFormat.NoDate -> {
+                                    R.string.user_preferences_date_format_no_date
+                                }
+                            }
                         },
-                        modifier = Modifier.fillMaxWidth(),
+                        title = R.string.user_preferences_date_format,
+                        options = {
+                            listOf(
+                                PreferredDateFormat.DayMonthYearWithTime(),
+                                PreferredDateFormat.MonthDayYearWithTime(),
+                                PreferredDateFormat.ShortYearMonthDayWithTime(),
+                                PreferredDateFormat.YearMonthDayWithTime(),
+                                PreferredDateFormat.NoDate,
+                            )
+                        },
+                        onOptionSelect = { newSelection ->
+                            onDateFormatChange(newSelection, userPreferences.preferredDateFormat.includeTime)
+                        },
+                        footer = {
+                            SettingToggle(
+                                title = stringResource(R.string.user_preferences_date_format_include_time),
+                                checked = userPreferences.preferredDateFormat.includeTime,
+                                onCheckedChange = { newValue ->
+                                    onDateFormatChange(userPreferences.preferredDateFormat, newValue)
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        },
                     )
-                },
-            )
+                }
+            }
+
+            item { shape: Shape ->
+                SettingToggle(
+                    title = stringResource(id = R.string.user_preferences_description_visible_in_lists),
+                    description = stringResource(
+                        id = R.string.user_preferences_description_visible_in_lists_description,
+                    ),
+                    checked = userPreferences.showDescriptionInLists,
+                    onCheckedChange = onShowDescriptionInListsChange,
+                    shape = shape,
+                )
+            }
+
+            item { shape: Shape ->
+                SettingToggle(
+                    title = stringResource(id = R.string.user_preferences_alphabetize_tags),
+                    description = stringResource(id = R.string.user_preferences_alphabetize_tags_description),
+                    checked = userPreferences.alphabetizeTags,
+                    onCheckedChange = onAlphabetizeTagsChange,
+                    shape = shape,
+                )
+            }
         }
-
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_description_visible_in_lists),
-            description = stringResource(id = R.string.user_preferences_description_visible_in_lists_description),
-            checked = userPreferences.showDescriptionInLists,
-            onCheckedChange = onShowDescriptionInListsChange,
-            shape = Shapes.MiddleShape,
-        )
-
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_alphabetize_tags),
-            description = stringResource(id = R.string.user_preferences_alphabetize_tags_description),
-            checked = userPreferences.alphabetizeTags,
-            onCheckedChange = onAlphabetizeTagsChange,
-            shape = Shapes.BottomShape,
-        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -381,67 +393,69 @@ private fun AppPreferencesContent(
         }
         val isPreferredDetailsViewEdit: Boolean = userPreferences.preferredDetailsView is PreferredDetailsView.Edit
 
-        SettingItem(
-            title = stringResource(id = R.string.user_preferences_preferred_details_view),
-            shape = Shapes.TopShape,
-        ) {
-            PreferenceSelectionButton(
-                currentSelection = userPreferences.preferredDetailsView,
-                buttonText = { option: PreferredDetailsView ->
-                    when (option) {
-                        is PreferredDetailsView.InAppBrowser -> {
-                            R.string.user_preferences_preferred_details_in_app_browser
-                        }
+        SegmentedColumn {
+            item { shape: Shape ->
+                SettingItem(
+                    title = stringResource(id = R.string.user_preferences_preferred_details_view),
+                    shape = shape,
+                ) {
+                    PreferenceSelectionButton(
+                        currentSelection = userPreferences.preferredDetailsView,
+                        buttonText = { option: PreferredDetailsView ->
+                            when (option) {
+                                is PreferredDetailsView.InAppBrowser -> {
+                                    R.string.user_preferences_preferred_details_in_app_browser
+                                }
 
-                        is PreferredDetailsView.ExternalBrowser -> {
-                            R.string.user_preferences_preferred_details_external_browser
-                        }
+                                is PreferredDetailsView.ExternalBrowser -> {
+                                    R.string.user_preferences_preferred_details_external_browser
+                                }
 
-                        is PreferredDetailsView.Edit -> {
-                            R.string.user_preferences_preferred_details_post_details
-                        }
-                    }
-                },
-                title = R.string.user_preferences_preferred_details_view,
-                options = {
-                    listOf(
-                        PreferredDetailsView.InAppBrowser(markAsReadOnOpen),
-                        PreferredDetailsView.ExternalBrowser(markAsReadOnOpen),
-                        PreferredDetailsView.Edit,
+                                is PreferredDetailsView.Edit -> {
+                                    R.string.user_preferences_preferred_details_post_details
+                                }
+                            }
+                        },
+                        title = R.string.user_preferences_preferred_details_view,
+                        options = {
+                            listOf(
+                                PreferredDetailsView.InAppBrowser(markAsReadOnOpen),
+                                PreferredDetailsView.ExternalBrowser(markAsReadOnOpen),
+                                PreferredDetailsView.Edit,
+                            )
+                        },
+                        onOptionSelect = onPreferredViewChange,
                     )
-                },
-                onOptionSelect = onPreferredViewChange,
-            )
 
-            Text(
-                text = stringResource(id = R.string.user_preferences_preferred_details_view_caveat),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+                    Text(
+                        text = stringResource(id = R.string.user_preferences_preferred_details_view_caveat),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
 
-        SettingToggle(
-            title = stringResource(R.string.user_preferences_use_split_nav),
-            description = stringResource(R.string.user_preferences_use_split_nav_description),
-            checked = userPreferences.useSplitNav,
-            onCheckedChange = onUseSplitNavChange,
-            shape = if (isPreferredDetailsViewEdit) Shapes.BottomShape else Shapes.MiddleShape,
-        )
+            item { shape: Shape ->
+                SettingToggle(
+                    title = stringResource(R.string.user_preferences_use_split_nav),
+                    description = stringResource(R.string.user_preferences_use_split_nav_description),
+                    checked = userPreferences.useSplitNav,
+                    onCheckedChange = onUseSplitNavChange,
+                    shape = shape,
+                )
+            }
 
-        AnimatedVisibility(
-            visible = !isPreferredDetailsViewEdit,
-            enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut(),
-        ) {
-            SettingToggle(
-                title = stringResource(id = R.string.user_preferences_preferred_details_view_mark_as_read_on_open),
-                description = stringResource(
-                    id = R.string.user_preferences_preferred_details_view_mark_as_read_on_open_caveat,
-                ),
-                checked = markAsReadOnOpen,
-                onCheckedChange = onMarkAsReadOnOpenChange,
-                shape = Shapes.BottomShape,
-            )
+            item(visible = !isPreferredDetailsViewEdit) { shape: Shape ->
+                SettingToggle(
+                    title = stringResource(id = R.string.user_preferences_preferred_details_view_mark_as_read_on_open),
+                    description = stringResource(
+                        id = R.string.user_preferences_preferred_details_view_mark_as_read_on_open_caveat,
+                    ),
+                    checked = markAsReadOnOpen,
+                    onCheckedChange = onMarkAsReadOnOpenChange,
+                    shape = shape,
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -600,65 +614,39 @@ private fun BookmarkingPreferencesContent(
         },
     )
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        BookmarkingPreferencesContent(
-            appMode = appMode,
-            userPreferences = userPreferences,
-            onEditAfterSharingChange = userPreferencesViewModel::saveEditAfterSharing,
-            onUseBackgroundShareReceiverChange = { newValue: Boolean ->
-                userPreferencesViewModel.saveUseBackgroundShareReceiver(newValue)
+    BookmarkingPreferencesContent(
+        appMode = appMode,
+        userPreferences = userPreferences,
+        tagManagerState = tagState,
+        onEditAfterSharingChange = userPreferencesViewModel::saveEditAfterSharing,
+        onUseBackgroundShareReceiverChange = { newValue: Boolean ->
+            userPreferencesViewModel.saveUseBackgroundShareReceiver(newValue)
 
-                val permissionNotGranted: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                    !localAppCompatActivity.isNotificationPermissionGranted()
-                if (newValue && permissionNotGranted) {
-                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            },
-            onFollowRedirectsChange = userPreferencesViewModel::saveFollowRedirects,
-            onRemoveUtmParametersChange = userPreferencesViewModel::saveRemoveUtmParameters,
-            onRemovedUrlParametersChange = userPreferencesViewModel::saveRemovedUrlParameters,
-            onAutoFillDescriptionChange = userPreferencesViewModel::saveAutoFillDescription,
-            onUseBlockquoteChange = userPreferencesViewModel::saveUseBlockquote,
-            onPrivateByDefaultChange = userPreferencesViewModel::saveDefaultPrivate,
-            onReadLaterByDefaultChange = userPreferencesViewModel::saveDefaultReadLater,
-        )
-
-        SettingItem(
-            title = stringResource(id = R.string.user_preferences_default_tags),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-                .animateContentSize(),
-            shape = Shapes.BottomShape,
-        ) {
-            Text(
-                text = stringResource(id = R.string.user_preferences_default_tags_description),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
-            TagManager(
-                searchTagInput = tagState.currentQuery,
-                onSearchTagInputChange = userPreferencesViewModel::setTagSearchQuery,
-                onAddTagClick = userPreferencesViewModel::addTag,
-                suggestedTags = tagState.suggestedTags,
-                onSuggestedTagClick = userPreferencesViewModel::addTag,
-                currentTagsTitle = tagState.displayTitle,
-                currentTags = tagState.tags,
-                onRemoveCurrentTagClick = userPreferencesViewModel::removeTag,
-                modifier = Modifier.fillWidthOfParent(parentPaddingStart = 16.dp, parentPaddingEnd = 16.dp),
-            )
-        }
-    }
+            val permissionNotGranted: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                !localAppCompatActivity.isNotificationPermissionGranted()
+            if (newValue && permissionNotGranted) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        },
+        onFollowRedirectsChange = userPreferencesViewModel::saveFollowRedirects,
+        onRemoveUtmParametersChange = userPreferencesViewModel::saveRemoveUtmParameters,
+        onRemovedUrlParametersChange = userPreferencesViewModel::saveRemovedUrlParameters,
+        onAutoFillDescriptionChange = userPreferencesViewModel::saveAutoFillDescription,
+        onUseBlockquoteChange = userPreferencesViewModel::saveUseBlockquote,
+        onPrivateByDefaultChange = userPreferencesViewModel::saveDefaultPrivate,
+        onReadLaterByDefaultChange = userPreferencesViewModel::saveDefaultReadLater,
+        onTagSearchQueryChange = userPreferencesViewModel::setTagSearchQuery,
+        onAddTagClick = userPreferencesViewModel::addTag,
+        onRemoveTagClick = userPreferencesViewModel::removeTag,
+        modifier = modifier,
+    )
 }
 
 @Composable
 private fun BookmarkingPreferencesContent(
     appMode: AppMode,
     userPreferences: UserPreferences,
+    tagManagerState: TagManagerState,
     onEditAfterSharingChange: (EditAfterSharing) -> Unit,
     onUseBackgroundShareReceiverChange: (Boolean) -> Unit,
     onFollowRedirectsChange: (Boolean) -> Unit,
@@ -668,6 +656,9 @@ private fun BookmarkingPreferencesContent(
     onUseBlockquoteChange: (Boolean) -> Unit,
     onPrivateByDefaultChange: (Boolean) -> Unit,
     onReadLaterByDefaultChange: (Boolean) -> Unit,
+    onTagSearchQueryChange: (String) -> Unit,
+    onAddTagClick: (String) -> Unit,
+    onRemoveTagClick: (Tag) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -685,189 +676,231 @@ private fun BookmarkingPreferencesContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        SettingItem(
-            title = stringResource(id = R.string.user_preferences_edit_after_sharing_title),
-            shape = Shapes.TopShape,
-        ) {
-            PreferenceSelectionButton(
-                currentSelection = userPreferences.editAfterSharing,
-                buttonText = { option: EditAfterSharing ->
-                    when (option) {
-                        is EditAfterSharing.BeforeSaving -> R.string.user_preferences_edit_after_sharing_before_saving
-                        is EditAfterSharing.AfterSaving -> R.string.user_preferences_edit_after_sharing_after_saving
-                    }
-                },
-                title = R.string.user_preferences_edit_after_sharing_title,
-                options = {
-                    listOf(
-                        EditAfterSharing.BeforeSaving,
-                        EditAfterSharing.AfterSaving,
+        SegmentedColumn {
+            item { shape: Shape ->
+                SettingItem(
+                    title = stringResource(id = R.string.user_preferences_edit_after_sharing_title),
+                    shape = shape,
+                ) {
+                    PreferenceSelectionButton(
+                        currentSelection = userPreferences.editAfterSharing,
+                        buttonText = { option: EditAfterSharing ->
+                            when (option) {
+                                is EditAfterSharing.BeforeSaving -> {
+                                    R.string.user_preferences_edit_after_sharing_before_saving
+                                }
+
+                                is EditAfterSharing.AfterSaving -> {
+                                    R.string.user_preferences_edit_after_sharing_after_saving
+                                }
+                            }
+                        },
+                        title = R.string.user_preferences_edit_after_sharing_title,
+                        options = {
+                            listOf(
+                                EditAfterSharing.BeforeSaving,
+                                EditAfterSharing.AfterSaving,
+                            )
+                        },
+                        onOptionSelect = onEditAfterSharingChange,
                     )
-                },
-                onOptionSelect = onEditAfterSharingChange,
-            )
 
-            Text(
-                text = stringResource(id = R.string.user_preferences_edit_after_sharing_description),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+                    Text(
+                        text = stringResource(id = R.string.user_preferences_edit_after_sharing_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
 
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_use_background_share_receiver),
-            description = stringResource(id = R.string.user_preferences_use_background_share_receiver_description),
-            checked = userPreferences.useBackgroundShareReceiver,
-            onCheckedChange = onUseBackgroundShareReceiverChange,
-            shape = Shapes.BottomShape,
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_follow_redirects),
-            description = stringResource(id = R.string.user_preferences_follow_redirects_description),
-            checked = userPreferences.followRedirects,
-            onCheckedChange = onFollowRedirectsChange,
-            shape = Shapes.TopShape,
-        )
-
-        RemoveUrlParametersSetting(
-            removeUtmParameters = userPreferences.removeUtmParameters,
-            onRemoveUtmParametersChange = onRemoveUtmParametersChange,
-            removedParameters = userPreferences.removedUrlParameters,
-            onRemovedParametersChange = onRemovedUrlParametersChange,
-        )
-
-        val autoFillDescription: Boolean = userPreferences.autoFillDescription
-
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_description_auto_fill),
-            description = stringResource(id = R.string.user_preferences_description_auto_fill_description),
-            checked = autoFillDescription,
-            onCheckedChange = onAutoFillDescriptionChange,
-            shape = if (autoFillDescription) Shapes.MiddleShape else Shapes.BottomShape,
-        )
-
-        AnimatedVisibility(
-            visible = autoFillDescription,
-            enter = expandVertically(),
-            exit = shrinkVertically(),
-        ) {
-            SettingToggle(
-                title = stringResource(id = R.string.user_preferences_use_blockquote),
-                description = stringResource(id = R.string.user_preferences_use_blockquote_description),
-                checked = userPreferences.useBlockquote,
-                onCheckedChange = onUseBlockquoteChange,
-                shape = Shapes.BottomShape,
-            )
+            item { shape: Shape ->
+                SettingToggle(
+                    title = stringResource(id = R.string.user_preferences_use_background_share_receiver),
+                    description = stringResource(
+                        id = R.string.user_preferences_use_background_share_receiver_description,
+                    ),
+                    checked = userPreferences.useBackgroundShareReceiver,
+                    onCheckedChange = onUseBackgroundShareReceiverChange,
+                    shape = shape,
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_default_read_later_label),
-            description = stringResource(id = R.string.user_preferences_default_read_later_description),
-            checked = userPreferences.defaultReadLater,
-            onCheckedChange = onReadLaterByDefaultChange,
-            shape = Shapes.TopShape,
-        )
+        SegmentedColumn {
+            item { shape: Shape ->
+                SettingToggle(
+                    title = stringResource(id = R.string.user_preferences_follow_redirects),
+                    description = stringResource(id = R.string.user_preferences_follow_redirects_description),
+                    checked = userPreferences.followRedirects,
+                    onCheckedChange = onFollowRedirectsChange,
+                    shape = shape,
+                )
+            }
 
-        if (AppMode.NO_API != appMode) {
-            SettingToggle(
-                title = stringResource(id = R.string.user_preferences_default_private_label),
-                description = stringResource(id = R.string.user_preferences_default_private_description),
-                checked = userPreferences.defaultPrivate,
-                onCheckedChange = onPrivateByDefaultChange,
-                shape = Shapes.MiddleShape,
-            )
+            item { shape: Shape ->
+                SettingToggle(
+                    title = stringResource(R.string.user_preferences_remove_utm_parameters),
+                    description = stringResource(R.string.user_preferences_remove_utm_parameters_description),
+                    checked = userPreferences.removeUtmParameters,
+                    onCheckedChange = onRemoveUtmParametersChange,
+                    shape = shape,
+                )
+            }
+
+            item { shape: Shape ->
+                RemovedUrlParametersSetting(
+                    removedParameters = userPreferences.removedUrlParameters,
+                    onRemovedParametersChange = onRemovedUrlParametersChange,
+                    shape = shape,
+                )
+            }
+
+            item { shape: Shape ->
+                SettingToggle(
+                    title = stringResource(id = R.string.user_preferences_description_auto_fill),
+                    description = stringResource(id = R.string.user_preferences_description_auto_fill_description),
+                    checked = userPreferences.autoFillDescription,
+                    onCheckedChange = onAutoFillDescriptionChange,
+                    shape = shape,
+                )
+            }
+
+            item(visible = userPreferences.autoFillDescription) { shape: Shape ->
+                SettingToggle(
+                    title = stringResource(id = R.string.user_preferences_use_blockquote),
+                    description = stringResource(id = R.string.user_preferences_use_blockquote_description),
+                    checked = userPreferences.useBlockquote,
+                    onCheckedChange = onUseBlockquoteChange,
+                    shape = shape,
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        SegmentedColumn {
+            item { shape: Shape ->
+                SettingToggle(
+                    title = stringResource(id = R.string.user_preferences_default_read_later_label),
+                    description = stringResource(id = R.string.user_preferences_default_read_later_description),
+                    checked = userPreferences.defaultReadLater,
+                    onCheckedChange = onReadLaterByDefaultChange,
+                    shape = shape,
+                )
+            }
+
+            if (AppMode.NO_API != appMode) {
+                item(key = "default_private") { shape: Shape ->
+                    SettingToggle(
+                        title = stringResource(id = R.string.user_preferences_default_private_label),
+                        description = stringResource(id = R.string.user_preferences_default_private_description),
+                        checked = userPreferences.defaultPrivate,
+                        onCheckedChange = onPrivateByDefaultChange,
+                        shape = shape,
+                    )
+                }
+            }
+
+            item(key = "default_tags") { shape: Shape ->
+                SettingItem(
+                    title = stringResource(id = R.string.user_preferences_default_tags),
+                    modifier = Modifier.animateContentSize(),
+                    shape = shape,
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.user_preferences_default_tags_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+
+                    TagManager(
+                        searchTagInput = tagManagerState.currentQuery,
+                        onSearchTagInputChange = onTagSearchQueryChange,
+                        onAddTagClick = onAddTagClick,
+                        suggestedTags = tagManagerState.suggestedTags,
+                        onSuggestedTagClick = onAddTagClick,
+                        currentTagsTitle = tagManagerState.displayTitle,
+                        currentTags = tagManagerState.tags,
+                        onRemoveCurrentTagClick = onRemoveTagClick,
+                        modifier = Modifier.fillWidthOfParent(parentPaddingStart = 16.dp, parentPaddingEnd = 16.dp),
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun RemoveUrlParametersSetting(
-    removeUtmParameters: Boolean,
-    onRemoveUtmParametersChange: (Boolean) -> Unit,
+private fun RemovedUrlParametersSetting(
     removedParameters: Set<String>,
     onRemovedParametersChange: (Set<String>) -> Unit,
+    shape: Shape,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+    SettingItem(
+        title = stringResource(R.string.user_preferences_remove_url_parameters),
+        modifier = modifier.animateContentSize(),
+        shape = shape,
     ) {
-        SettingToggle(
-            title = stringResource(R.string.user_preferences_remove_utm_parameters),
-            description = stringResource(R.string.user_preferences_remove_utm_parameters_description),
-            checked = removeUtmParameters,
-            onCheckedChange = onRemoveUtmParametersChange,
-            shape = Shapes.MiddleShape,
+        Text(
+            text = stringResource(R.string.user_preferences_remove_url_parameters_description),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
         )
 
-        SettingItem(
-            title = stringResource(R.string.user_preferences_remove_url_parameters),
-            modifier = Modifier.animateContentSize(),
-            shape = Shapes.MiddleShape,
-        ) {
-            Text(
-                text = stringResource(R.string.user_preferences_remove_url_parameters_description),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+        val textFieldState = rememberTextFieldState()
 
-            val textFieldState = rememberTextFieldState()
-
-            val submitValueAction = {
-                if (textFieldState.text.isNotBlank()) {
-                    onRemovedParametersChange(removedParameters + textFieldState.text.toString())
-                }
-                textFieldState.setTextAndPlaceCursorAtEnd("")
+        val submitValueAction = {
+            if (textFieldState.text.isNotBlank()) {
+                onRemovedParametersChange(removedParameters + textFieldState.text.toString())
             }
-
-            OutlinedTextField(
-                state = textFieldState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onKeyEvent { keyEvent ->
-                        if (keyEvent.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
-                            submitValueAction()
-                            return@onKeyEvent true
-                        }
-                        false
-                    },
-                textStyle = MaterialTheme.typography.bodyMedium,
-                label = { Text(text = stringResource(R.string.user_preferences_remove_url_parameters_hint)) },
-                trailingIcon = {
-                    TextButton(
-                        onClick = submitValueAction,
-                        shapes = ExtendedTheme.defaultButtonShapes,
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                    ) {
-                        Text(text = stringResource(id = R.string.hint_add))
-                    }
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                onKeyboardAction = KeyboardActionHandler { submitValueAction() },
-                lineLimits = TextFieldLineLimits.SingleLine,
-                shape = Shapes.StandaloneShape,
-            )
-
-            val closeIcon = rememberVectorPainter(AppIcons.Close)
-            SingleLineChipGroup(
-                items = remember(removedParameters) {
-                    removedParameters.map { parameter -> ChipGroup.Item(text = parameter, icon = closeIcon) }
-                },
-                onItemClick = { item -> onRemovedParametersChange(removedParameters - item.text) },
-                modifier = Modifier
-                    .fillWidthOfParent(parentPaddingStart = 12.dp, parentPaddingEnd = 12.dp)
-                    .fillMaxWidth(),
-                itemTextStyle = MaterialTheme.typography.bodySmall.copy(
-                    fontFamily = FontFamily.Monospace,
-                ),
-                contentPadding = PaddingValues(horizontal = 12.dp),
-            )
+            textFieldState.setTextAndPlaceCursorAtEnd("")
         }
+
+        OutlinedTextField(
+            state = textFieldState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onKeyEvent { keyEvent ->
+                    if (keyEvent.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+                        submitValueAction()
+                        return@onKeyEvent true
+                    }
+                    false
+                },
+            textStyle = MaterialTheme.typography.bodyMedium,
+            label = { Text(text = stringResource(R.string.user_preferences_remove_url_parameters_hint)) },
+            trailingIcon = {
+                TextButton(
+                    onClick = submitValueAction,
+                    shapes = ExtendedTheme.defaultButtonShapes,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                ) {
+                    Text(text = stringResource(id = R.string.hint_add))
+                }
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+            onKeyboardAction = KeyboardActionHandler { submitValueAction() },
+            lineLimits = TextFieldLineLimits.SingleLine,
+            shape = Shapes.StandaloneShape,
+        )
+
+        val closeIcon = rememberVectorPainter(AppIcons.Close)
+        SingleLineChipGroup(
+            items = remember(removedParameters) {
+                removedParameters.map { parameter -> ChipGroup.Item(text = parameter, icon = closeIcon) }
+            },
+            onItemClick = { item -> onRemovedParametersChange(removedParameters - item.text) },
+            modifier = Modifier
+                .fillWidthOfParent(parentPaddingStart = 12.dp, parentPaddingEnd = 12.dp)
+                .fillMaxWidth(),
+            itemTextStyle = MaterialTheme.typography.bodySmall.copy(
+                fontFamily = FontFamily.Monospace,
+            ),
+            contentPadding = PaddingValues(horizontal = 12.dp),
+        )
     }
 }
 
@@ -999,6 +1032,7 @@ private fun BookmarkingPreferencesContentPreview(
         BookmarkingPreferencesContent(
             appMode = AppMode.PINBOARD,
             userPreferences = userPreferences,
+            tagManagerState = TagManagerState(),
             onEditAfterSharingChange = {},
             onUseBackgroundShareReceiverChange = {},
             onFollowRedirectsChange = {},
@@ -1008,6 +1042,9 @@ private fun BookmarkingPreferencesContentPreview(
             onUseBlockquoteChange = {},
             onPrivateByDefaultChange = {},
             onReadLaterByDefaultChange = {},
+            onTagSearchQueryChange = {},
+            onAddTagClick = {},
+            onRemoveTagClick = {},
             modifier = Modifier.safeDrawingPadding(),
         )
     }

@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonGroupDefaults
@@ -74,6 +73,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.components.ConnectedButtonRowItem
 import com.fibelatti.ui.components.ListItem
 import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.components.segmentedItems
 import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.foundation.pxToDp
 import com.fibelatti.ui.preview.PreviewAll
@@ -231,18 +231,13 @@ fun TagList(
                         )
                     }
 
-                    itemsIndexed(items, key = { _, item -> item.name }) { idx, item ->
+                    segmentedItems(items = items, key = { item: Tag -> item.name }) { item: Tag, shape: Shape ->
                         TagListItem(
                             item = item,
                             onTagClick = onTagClick,
                             onTagLongClick = onTagLongClick,
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            shape = when (idx) {
-                                0 if items.size == 1 -> Shapes.StandaloneShape
-                                0 -> Shapes.TopShape
-                                items.size - 1 -> Shapes.BottomShape
-                                else -> Shapes.MiddleShape
-                            },
+                            shape = shape,
                         )
                     }
                 }

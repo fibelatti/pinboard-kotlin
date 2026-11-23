@@ -40,6 +40,7 @@ import com.fibelatti.ui.components.AppBottomSheet
 import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.ListItem
 import com.fibelatti.ui.components.RadioGroup
+import com.fibelatti.ui.components.segmentedItems
 import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAccessibility
 import com.fibelatti.ui.preview.PreviewThemesAndColors
@@ -203,20 +204,16 @@ private fun <T> SelectionDialogContent(
             }
         }
 
-        itemsIndexed(items = visibleOptions) { index: Int, option: T ->
-            val shape: Shape = when {
-                visibleOptions.size == 1 -> Shapes.StandaloneShape
-                index == 0 -> Shapes.TopShape
-                index == visibleOptions.lastIndex && !showHiddenOptions -> Shapes.BottomShape
-                else -> Shapes.MiddleShape
-            }
+        // Once revealed, the hidden options continue the group of visible options
+        val segmentCount: Int = visibleOptions.size + if (showHiddenOptions) hiddenOptions.size else 0
 
+        itemsIndexed(items = visibleOptions) { index: Int, option: T ->
             SelectionItem(
                 option = option,
                 optionName = optionName,
                 optionIcon = optionIcon,
                 onClick = onOptionSelect,
-                shape = shape,
+                shape = Shapes.segment(index = index, count = segmentCount),
             )
         }
 
@@ -235,12 +232,6 @@ private fun <T> SelectionDialogContent(
 
             hiddenOptions.isNotEmpty() -> {
                 itemsIndexed(hiddenOptions) { index: Int, option: T ->
-                    val shape: Shape = when {
-                        visibleOptions.isEmpty() -> Shapes.TopShape
-                        index == hiddenOptions.lastIndex -> Shapes.BottomShape
-                        else -> Shapes.MiddleShape
-                    }
-
                     SelectionItem(
                         option = option,
                         optionName = optionName,
@@ -249,7 +240,7 @@ private fun <T> SelectionDialogContent(
                         modifier = Modifier.animateItem(
                             fadeInSpec = tween(delayMillis = 75 * index, easing = FastOutLinearInEasing),
                         ),
-                        shape = shape,
+                        shape = Shapes.segment(index = visibleOptions.size + index, count = segmentCount),
                     )
                 }
             }
@@ -310,14 +301,7 @@ private fun <T> SelectionDialogCustomizationContent(
             }
         }
 
-        itemsIndexed(items = visibleOptions) { index: Int, option: T ->
-            val shape: Shape = when {
-                visibleOptions.size == 1 -> Shapes.StandaloneShape
-                index == 0 -> Shapes.TopShape
-                index == visibleOptions.lastIndex -> Shapes.BottomShape
-                else -> Shapes.MiddleShape
-            }
-
+        segmentedItems(items = visibleOptions) { option: T, shape: Shape ->
             SelectionItem(
                 option = option,
                 optionName = optionName,
@@ -358,14 +342,7 @@ private fun <T> SelectionDialogCustomizationContent(
                 }
             }
 
-            itemsIndexed(hiddenOptions) { index: Int, option: T ->
-                val shape: Shape = when {
-                    hiddenOptions.size == 1 -> Shapes.StandaloneShape
-                    index == 0 -> Shapes.TopShape
-                    index == hiddenOptions.lastIndex -> Shapes.BottomShape
-                    else -> Shapes.MiddleShape
-                }
-
+            segmentedItems(items = hiddenOptions) { option: T, shape: Shape ->
                 SelectionItem(
                     option = option,
                     optionName = optionName,
