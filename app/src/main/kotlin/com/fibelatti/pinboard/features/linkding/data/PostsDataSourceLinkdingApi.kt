@@ -20,6 +20,8 @@ import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.http.HttpStatusCode
 import javax.inject.Inject
 import kotlin.concurrent.Volatile
 import kotlin.time.Clock
@@ -154,7 +156,14 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
 
         return networkResult.fold(
             onSuccess = { coRunCatching { linkdingDao.deleteBookmark(id = post.id) } },
-            onFailure = { deleteBookmarkLocal(post = post) },
+            onFailure = {
+                // Already gone on the server (e.g. deleted via the web UI): queueing it would retry forever
+                if (it is ClientRequestException && it.response.status == HttpStatusCode.NotFound) {
+                    coRunCatching { linkdingDao.deleteBookmark(id = post.id) }
+                } else {
+                    deleteBookmarkLocal(post = post)
+                }
+            },
         )
     }
 
