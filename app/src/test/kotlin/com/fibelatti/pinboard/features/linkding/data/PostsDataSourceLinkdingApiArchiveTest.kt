@@ -10,6 +10,8 @@ import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.google.common.truth.Truth.assertThat
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -137,5 +139,24 @@ class PostsDataSourceLinkdingApiArchiveTest {
                 )
             }
             assertThat(result.getOrNull()).isEqualTo(expectedPost)
+        }
+
+    @Test
+    fun `GIVEN remote returns 404 WHEN delete is called THEN the local row is removed AND not marked pending`() =
+        runTest {
+            // GIVEN
+            val post = createPost(pendingSync = PendingSync.DELETE)
+            coEvery { mockApi.deleteBookmark(id = SAMPLE_HASH) } throws ClientRequestException(
+                response = mockk(relaxed = true) { every { status } returns HttpStatusCode.NotFound },
+                cachedResponseText = "",
+            )
+
+            // WHEN
+            val result = dataSource.delete(post)
+
+            // THEN
+            assertThat(result.isSuccess).isTrue()
+            coVerify { mockDao.deleteBookmark(id = SAMPLE_HASH) }
+            coVerify(exactly = 0) { mockDao.saveBookmarks(any()) }
         }
 }
