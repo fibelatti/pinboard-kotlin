@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* Add Chinese translation
+* Fix Linkding bookmarks deleted elsewhere getting stuck as pending delete
+
+Thanks for using the app!
